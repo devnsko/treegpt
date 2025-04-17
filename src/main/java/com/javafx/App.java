@@ -11,8 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -34,7 +32,7 @@ public class App extends Application {
         grid.setVgap(5);
         grid.setHgap(5);
 
-        // Textfield
+        // SetupTextfield
         final TextField inp = new TextField();
         inp.setPromptText("Let's explore new!");
         inp.setPrefColumnCount(10);
@@ -43,21 +41,23 @@ public class App extends Application {
         GridPane.setConstraints(inp, 0, 0);
         grid.getChildren().add(inp);
 
-        Button sendBtn = new Button("Send");
+        // Setup Send button
+        final Button sendBtn = new Button("Send");
         GridPane.setConstraints(sendBtn, 1, 0);
         grid.getChildren().add(sendBtn);
 
+        // Setup Clear button
         Button clearBtn = new Button("Clear");
         GridPane.setConstraints(clearBtn, 2, 0);
         grid.getChildren().add(clearBtn);
 
-
+        // Setup Action Label
         final Label label = new Label();
         GridPane.setConstraints(label, 0, 3);
         GridPane.setColumnSpan(label, 2);
         grid.getChildren().add(label);
 
-        // Setting up the SUBMIT button
+        // Setting up the SUBMIT action
         sendBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -69,12 +69,20 @@ public class App extends Application {
             }
         });
 
-        // Setting up CLEAR buton
+        // Setting up CLEAR action
         clearBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 inp.clear();
                 label.setText(null);
+            }
+        });
+
+        // Setting up listening to the text field
+        inp.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                sendBtn.setDisable(inp.getText() == "");
             }
         });
 
