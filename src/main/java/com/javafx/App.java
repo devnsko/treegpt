@@ -41,8 +41,11 @@ public class App extends Application {
     }
     private static String API_KEY = props.getProperty("OPENAI_API_KEY");
     
-    OpenAIClient client = OpenAIOkHttpClient.fromEnv();
-    
+    OpenAIClient client = OpenAIOkHttpClient.builder()
+    // Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID` and `OPENAI_BASE_URL` environment variables
+    .fromEnv()
+    .apiKey(API_KEY)
+    .build();
     private static Scene scene;
 
     private static VBox chatBox = new VBox(5);
@@ -91,7 +94,7 @@ public class App extends Application {
             public void handle(ActionEvent e) {
                 if((inp.getText() != null && !inp.getText().isEmpty())) {
                     createMessageBlock(inp.getText());
-                    messageGPT(inp.getText());
+                    talkGPT(inp.getText());
                     clearFields();
                     updateUI();
                 } else {
@@ -172,9 +175,22 @@ public class App extends Application {
         }
     }
 
-    public String messageGPT(String message) {
+    public void talkGPT(String message) {
+        Response answer = messageGPT(message);        
+        // System.out.println(answer.toString());
+        String text = answer.output().get(0).asMessage().content().get(0).asOutputText().text();
+        if(!createMessageBlock(text)) {
+            System.out.println("Some issues with gpt response");
+        }
+    }
 
-        return "I will answer";
+    public Response messageGPT(String message) {
+        ResponseCreateParams params = ResponseCreateParams.builder()
+        .input("short answer: " + message)
+        .model(ChatModel.GPT_4_1)
+        .build();
+        Response response = client.responses().create(params);
+        return response;
     }
 
 }

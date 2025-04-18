@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "java",
+        "name": "Run with Maven (javafx:run)",
+        "request": "launch",
+        "mainClass": "com.javafx.App",
+        "preLaunchTask": "run-javafx-maven"
+      }
+    ]
+  }
