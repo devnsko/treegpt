@@ -10,17 +10,46 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
+
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.ChatModel;
+import com.openai.models.responses.Response;
+import com.openai.models.responses.ResponseCreateParams;
 
 /**
  * JavaFX App
  */
 public class App extends Application {
-
+    private static Properties props = new Properties();
+    static {
+        try {
+            props.load(new FileInputStream("src/main/resources/application.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private static String API_KEY = props.getProperty("OPENAI_API_KEY");
+    
+    OpenAIClient client = OpenAIOkHttpClient.fromEnv();
+    
     private static Scene scene;
+
+    private static VBox chatBox = new VBox(5);
+    private static TextField inp = new TextField();
+    private static Button sendBtn = new Button("Send");
+    private static Button clearBtn = new Button("Clear");
+    private static Label issueLabel = new Label();
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -33,7 +62,6 @@ public class App extends Application {
         grid.setHgap(5);
 
         // SetupTextfield
-        final TextField inp = new TextField();
         inp.setPromptText("Let's explore new!");
         inp.setPrefColumnCount(10);
         inp.getText();
@@ -42,29 +70,32 @@ public class App extends Application {
         grid.getChildren().add(inp);
 
         // Setup Send button
-        final Button sendBtn = new Button("Send");
         GridPane.setConstraints(sendBtn, 1, 0);
         grid.getChildren().add(sendBtn);
 
         // Setup Clear button
-        Button clearBtn = new Button("Clear");
         GridPane.setConstraints(clearBtn, 2, 0);
         grid.getChildren().add(clearBtn);
 
         // Setup Action Label
-        final Label label = new Label();
-        GridPane.setConstraints(label, 0, 3);
-        GridPane.setColumnSpan(label, 2);
-        grid.getChildren().add(label);
+        GridPane.setConstraints(issueLabel, 0, 3);
+        GridPane.setColumnSpan(issueLabel, 2);
+        grid.getChildren().add(issueLabel);
+
+        GridPane.setConstraints(chatBox, 0, 3);
+        grid.getChildren().add(chatBox);
 
         // Setting up the SUBMIT action
         sendBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 if((inp.getText() != null && !inp.getText().isEmpty())) {
-                    label.setText(inp.getText() + "... So it is...");
+                    createMessageBlock(inp.getText());
+                    messageGPT(inp.getText());
+                    clearFields();
+                    updateUI();
                 } else {
-                    label.setText("u have empty msg");
+                    issueLabel.setText("u have empty msg");
                 }
             }
         });
@@ -73,16 +104,16 @@ public class App extends Application {
         clearBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                inp.clear();
-                label.setText(null);
+                clearFields();
+                updateUI();
             }
         });
 
         // Setting up listening to the text field
-        inp.setOnAction(new EventHandler<ActionEvent>() {
+        inp.setOnKeyTyped(new EventHandler<KeyEvent>() {
             @Override
-            public void handle(ActionEvent e) {
-                sendBtn.setDisable(inp.getText() == "");
+            public void handle(KeyEvent e) {
+                updateUI();
             }
         });
 
@@ -97,7 +128,7 @@ public class App extends Application {
         primaryStage.setTitle("JavaFX Application");
 
         primaryStage.show();
-
+        updateUI();
         System.out.println("Application has started successfully.");
 
     }
@@ -113,6 +144,37 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    public void clearFields() {
+        inp.clear();
+        issueLabel.setText(null);
+    }
+
+    public void updateUI() {
+        boolean isEmpty = inp.getText() == "";
+        sendBtn.setDisable(isEmpty);
+        clearBtn.setDisable(isEmpty);
+    }
+
+    public boolean createMessageBlock(String msg) {
+        try {
+            Text t = new Text(msg);
+            HBox messageBlock = new HBox();
+            messageBlock.setStyle("-fx-background-color: lightgray; -fx-padding: 10; -fx-border-radius: 5; -fx-background-radius: 5;");
+            messageBlock.getChildren().add(t);
+            chatBox.getChildren().add(messageBlock);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error while trying to create message box: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String messageGPT(String message) {
+
+        return "I will answer";
     }
 
 }
