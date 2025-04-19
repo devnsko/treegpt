@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+
+<VBox xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="com.javafx.DropZipController" spacing="10" alignment="CENTER">
+    <Button fx:id="dropbutton" text="Drop zip" onAction="#DropZip"/>
+    <Label fx:id="droplabel" text="drop gpt zip here" />
+    <VBox fx:id="dropZone" style="-fx-border-color: #00aaff; -fx-border-width: 2; -fx-padding: 20;" alignment="CENTER" prefHeight="150">
+        <Label text="Drag and Drop here your ZIP chats"/>
+    </VBox>
+    <ListView fx:id="listView"/>
+</VBox>

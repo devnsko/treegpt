@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.web.WebView?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.javafx.ExmController" prefWidth="400" prefHeight="600" >
+    <VBox spacing="10" alignment="TOP_CENTER" padding="20">
+        
+        <!-- 1. Label -->
+        <Label text="Это Label" />
+
+        <!-- 2. Button -->
+        <Button text="Нажми меня" onAction="#handleButton" />
+
+        <!-- 3. TextField -->
+        <TextField fx:id="textField" promptText="Введите текст" />
+
+        <!-- 4. TextArea -->
+        <TextArea fx:id="textArea" promptText="Введите длинный текст" />
+
+        <!-- 5. PasswordField -->
+        <PasswordField fx:id="passwordField" promptText="Пароль" />
+
+        <!-- 6. CheckBox -->
+        <CheckBox text="Согласен" fx:id="checkBox" />
+
+        <!-- 7. RadioButton -->
+        <HBox spacing="10">
+            <RadioButton text="Мужской" toggleGroup="$genderGroup" />
+            <RadioButton text="Женский" toggleGroup="$genderGroup" />
+        </HBox>
+
+        <!-- 8. ComboBox -->
+        <ComboBox fx:id="comboBox" promptText="Выберите элемент">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Элемент 1" />
+                    <String fx:value="Элемент 2" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+
+        <!-- 9. ListView -->
+        <ListView fx:id="listView">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Пункт A" />
+                    <String fx:value="Пункт B" />
+                </FXCollections>
+            </items>
+        </ListView>
+
+        <!-- 10. TableView -->
+        <TableView fx:id="tableView" prefHeight="150">
+            <columns>
+                <TableColumn text="Имя" />
+                <TableColumn text="Возраст" />
+            </columns>
+        </TableView>
+
+        <!-- 11. DatePicker -->
+        <DatePicker fx:id="datePicker" />
+
+        <!-- 12. Slider -->
+        <Slider fx:id="slider" min="0" max="100" value="50" />
+
+        <!-- 13. ProgressBar -->
+        <ProgressBar progress="0.5" />
+
+        <!-- 14. ProgressIndicator -->
+        <ProgressIndicator progress="0.7" />
+
+        <!-- 15. MenuBar -->
+        <MenuBar>
+            <menus>
+                <Menu text="Файл">
+                    <items>
+                        <MenuItem text="Открыть" />
+                        <MenuItem text="Сохранить" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+
+        <!-- 16. ToolBar -->
+        <ToolBar>
+            <Button text="Инструмент 1" />
+            <Button text="Инструмент 2" />
+        </ToolBar>
+
+        <!-- 17. TitledPane -->
+        <TitledPane text="Секрет">
+            <content>
+                <Label text="Это скрытое сообщение" />
+            </content>
+        </TitledPane>
+
+        <!-- 18. Accordion -->
+        <Accordion>
+            <panes>
+                <TitledPane text="Панель 1" />
+                <TitledPane text="Панель 2" />
+            </panes>
+        </Accordion>
+
+        <!-- 19. ImageView -->
+        <ImageView fitHeight="100" fitWidth="100">
+            <image>
+                <Image url="https://via.placeholder.com/100" />
+            </image>
+        </ImageView>
+
+        <!-- 20. WebView -->
+        <WebView fx:id="webView" prefHeight="100" />
+
+    </VBox>
+</ScrollPane>
