@@ -1,17 +1,19 @@
 import json
-
-
 import os
-import json
+from os import path
+
+
+def rec(data, id):
+    node = data["mapping"][id]
+    msg = node["message"]
+    print(f"ID: {id}, Message: {', '.join(part for part in msg['content']['parts']) if msg and 'content' in msg and 'parts' in msg['content'] else 'None'}")
+    if "children" in node:
+        for child_id in node["children"]:
+            rec(data, child_id)
 
 gptfolder = rf'gptchats'
-
-# Ensure the folder exists
-os.makedirs(gptfolder, exist_ok=True)
-
-with open(rf"gptchats/conversations.json", "r") as chat:
-    jsn = json.load(chat)
-    print(jsn[0])
+with open(path.join(gptfolder, 'example.json'), 'r') as f:
+    data = json.load(f)
+    rec(data, "client-created-root")
     
-with open(rf"gptchats/example.json", "w") as f:
-    json.dump(jsn[0], f, indent=2)
+    
