@@ -3,6 +3,13 @@
     "configurations": [
       {
         "type": "java",
+        "name": "GraphApp",
+        "request": "launch",
+        "mainClass": "com.javafx.GraphApp",
+        "projectName": "treegpt"
+      },
+      {
+        "type": "java",
         "name": "Run with Maven (javafx:run)",
         "request": "launch",
         "mainClass": "com.javafx.App",
