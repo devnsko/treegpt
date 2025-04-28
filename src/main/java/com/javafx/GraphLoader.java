@@ -14,6 +14,7 @@ public class GraphLoader {
 
             for (JsonElement el : arr) {
                 JsonObject obj = el.getAsJsonObject();
+                System.out.println(obj.get("title"));
                 JsonObject pos = obj.getAsJsonObject("position");
 
                 String id = obj.get("id").getAsString();
@@ -27,6 +28,7 @@ public class GraphLoader {
 
                 list.add(new GraphNode(id, parent, cluster, x, y, z));
             }
+            System.out.println(list.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
