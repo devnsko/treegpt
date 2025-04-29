@@ -10,6 +10,7 @@ public class GraphNode {
     public int cluster;
     public double x, y, z;
     public Sphere sphere;
+    public Xform sphereXform;
 
     public GraphNode(String id, String parentId, int cluster, double x, double y, double z) {
         this.id = id;
@@ -23,6 +24,8 @@ public class GraphNode {
         this.sphere.setTranslateX(x * 50);
         this.sphere.setTranslateY(y * 50);
         this.sphere.setTranslateZ(z * 50);
+
+        this.sphereXform = new Xform();
 
         PhongMaterial mat = new PhongMaterial(GraphUtils.colorByCluster(cluster));
         this.sphere.setMaterial(mat);
