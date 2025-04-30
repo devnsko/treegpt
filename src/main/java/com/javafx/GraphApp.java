@@ -1,6 +1,7 @@
 package com.javafx;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.paint.*;
@@ -14,15 +15,16 @@ import java.util.*;
 
 public class GraphApp extends Application {
 
-    private final Group graphGroup = new Group();
     // private double anchorX, anchorY;
     // private double angleX = 0, angleY = 0;
     // private double zoom = -500;
-
+    
     
     final Group root = new Group();
+    final Xform graphGroup = new Xform();
     final Xform world = new Xform();
-    final Xform moleculeGroup = new Xform();
+    final Xform nodeGroup = new Xform();
+    final Xform edgeGroup = new Xform();
     final Xform axisGroup = new Xform();
     final PerspectiveCamera camera = new PerspectiveCamera(true);
     final Xform cameraXform = new Xform();
@@ -52,43 +54,15 @@ public class GraphApp extends Application {
     @Override
     public void start(Stage stage) {
         Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.BLACK);
+        scene.setFill(Color.WHITE);
         handleKeyboard(scene, world);
         handleMouse(scene, world);
         
         root.getChildren().add(world);
         buildCamera();
         buildAxes();
-        root.getChildren().add(graphGroup);
+        buildGraph();
 
-        String latestFile = GraphLoader.getLatestGraphFile(".treegpt/graphs");
-        if (latestFile == null) {
-            System.err.println("[FAIL] Can't find any graphs");
-            return;
-        }
-        List<GraphNode> nodes = GraphLoader.load(latestFile);
-        System.out.println("[SUCCESS] Loaded graph from: " + latestFile);
-
-
-        for (GraphNode node : nodes) {
-            graphGroup.getChildren().add(node.getXform());
-            System.err.println(graphGroup.computeAreaInScreen()); 
-        }
-
-        for (GraphNode node : nodes) {
-            if (node.parentId != null) {
-                GraphNode parent = GraphNode.findById(nodes, node.parentId);
-                if (parent != null) {
-                    CylinderXform line = GraphUtils.connect(node.getXform(), parent.getXform());
-                    graphGroup.getChildren().add(line);
-                    node.getXform().debug();
-                    parent.getXform().debug();
-                    line.debug();
-                }
-            }
-            System.err.println(node.id); 
-        }
-        
         AmbientLight ambientLight = new AmbientLight(Color.rgb(200, 200, 200));
         root.getChildren().add(ambientLight);
 
@@ -104,6 +78,38 @@ public class GraphApp extends Application {
         stage.show();
         scene.setCamera(camera);
 
+    }
+
+    private void buildGraph() {
+        String latestFile = GraphLoader.getLatestGraphFile(".treegpt/graphs");
+        if (latestFile == null) {
+            System.err.println("[FAIL] Can't find any graphs");
+            return;
+        }
+        List<GraphNode> nodes = GraphLoader.load(latestFile);
+        System.out.println("[SUCCESS] Loaded graph from: " + latestFile);
+
+
+        for (GraphNode node : nodes) {
+            nodeGroup.getChildren().add(node.getXform());
+            System.err.println(nodeGroup.computeAreaInScreen()); 
+        }
+
+        for (GraphNode node : nodes) {
+            if (node.parentId != null) {
+                GraphNode parent = GraphNode.findById(nodes, node.parentId);
+                if (parent != null) {
+                    CylinderXform line = GraphUtils.connect(node.getXform(), parent.getXform());
+                    edgeGroup.getChildren().add(line);
+                    node.getXform().debug();
+                    parent.getXform().debug();
+                    line.debug();
+                }
+            }
+            System.err.println(node.id); 
+        }
+        graphGroup.getChildren().addAll(nodeGroup, edgeGroup);
+        root.getChildren().add(graphGroup);
     }
 
     
@@ -220,13 +226,23 @@ public class GraphApp extends Application {
                         axisGroup.setVisible(!axisGroup.isVisible());
                         break;
                     case V:
-                        moleculeGroup.setVisible(!moleculeGroup.isVisible());
+                        edgeGroup.setVisible(!edgeGroup.isVisible());
                         break;
+                    case B:
+                        nodeGroup.setVisible(!nodeGroup.isVisible());
+                        break;
+                    case M:
+                    // TODO: CHECK mixed EVERY angle rotation
+                        mixingAngles();
                     default:
                         break;
                 }
             }
         });
+    }
+
+    private void mixingAngles() {
+        // edgeGroup.getChildren().forEach();
     }
 
     public static void main(String[] args) {

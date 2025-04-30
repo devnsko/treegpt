@@ -2,6 +2,7 @@ package com.javafx;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.transform.Rotate;
 
 import java.util.Random;
 
@@ -37,6 +38,9 @@ public class GraphUtils {
         CylinderXform line = new CylinderXform(0.01, distance);
 
         line.setTranslate(startX, startY, startZ);
+        line.cylinder.setTranslateX(distance/2.0);
+        line.cylinder.setRotationAxis(Rotate.Z_AXIS);
+        line.cylinder.setRotate(90.0);
 
         line.setRotateY(azimuth);
         line.setRotateX(-elevation);

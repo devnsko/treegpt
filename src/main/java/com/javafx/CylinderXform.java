@@ -14,7 +14,7 @@ public class CylinderXform extends Xform {
     public CylinderXform(double radius, double height) {
         super();
         cylinder = new Cylinder(radius, height);
-        cylinder.setTranslateY(height/2.0);
+        // cylinder.setTranslateX(height/2.0);
         // cylinder.setRotationAxis(Rotate.Z_AXIS);
         // cylinder.setRotate(90.0);
         this.getChildren().add(cylinder);
