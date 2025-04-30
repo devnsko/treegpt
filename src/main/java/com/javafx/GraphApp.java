@@ -6,8 +6,6 @@ import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -17,9 +15,9 @@ import java.util.*;
 public class GraphApp extends Application {
 
     private final Group graphGroup = new Group();
-    private double anchorX, anchorY;
-    private double angleX = 0, angleY = 0;
-    private double zoom = -500;
+    // private double anchorX, anchorY;
+    // private double angleX = 0, angleY = 0;
+    // private double zoom = -500;
 
     
     final Group root = new Group();
@@ -37,7 +35,6 @@ public class GraphApp extends Application {
     private static final double CAMERA_FAR_CLIP = 10000.0;
 
     private static final double AXIS_LENGTH = 250.0;
-    private static final double HYDROGEN_ANGLE = 104.5;
 
     private static final double CONTROL_MULTIPLIER = 0.1;
     private static final double SHIFT_MULTIPLIER = 10.0;
@@ -55,7 +52,7 @@ public class GraphApp extends Application {
     @Override
     public void start(Stage stage) {
         Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.GREY);
+        scene.setFill(Color.BLACK);
         handleKeyboard(scene, world);
         handleMouse(scene, world);
         
@@ -74,7 +71,7 @@ public class GraphApp extends Application {
 
 
         for (GraphNode node : nodes) {
-            graphGroup.getChildren().add(node.getSphere());
+            graphGroup.getChildren().add(node.getXform());
             System.err.println(graphGroup.computeAreaInScreen()); 
         }
 
@@ -82,8 +79,11 @@ public class GraphApp extends Application {
             if (node.parentId != null) {
                 GraphNode parent = GraphNode.findById(nodes, node.parentId);
                 if (parent != null) {
-                    Cylinder line = GraphUtils.connect(node, parent);
+                    CylinderXform line = GraphUtils.connect(node.getXform(), parent.getXform());
                     graphGroup.getChildren().add(line);
+                    node.getXform().debug();
+                    parent.getXform().debug();
+                    line.debug();
                 }
             }
             System.err.println(node.id); 
@@ -195,7 +195,6 @@ public class GraphApp extends Application {
             public void handle(ScrollEvent me) {
                 double scroll = me.getDeltaY();
                 if (me.isControlDown()) scroll *= SHIFT_MULTIPLIER;
-                System.out.println(scroll);
                 double z = camera.getTranslateZ();
                 double newZ = z + scroll * MOUSE_SPEED;
                 camera.setTranslateZ(newZ);

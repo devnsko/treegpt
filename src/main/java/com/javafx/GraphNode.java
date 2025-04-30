@@ -1,6 +1,5 @@
 package com.javafx;
 
-import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 
@@ -20,12 +19,11 @@ public class GraphNode {
         this.y = y;
         this.z = z;
 
-        this.sphere = new Sphere(5);
-        this.sphere.setTranslateX(x * 50);
-        this.sphere.setTranslateY(y * 50);
-        this.sphere.setTranslateZ(z * 50);
-
+        this.sphere = new Sphere(0.03);
         this.sphereXform = new Xform();
+        this.sphereXform.setTranslate(x, y, z);
+        this.sphereXform.getChildren().add(this.sphere);
+
 
         PhongMaterial mat = new PhongMaterial(GraphUtils.colorByCluster(cluster));
         this.sphere.setMaterial(mat);
@@ -33,6 +31,10 @@ public class GraphNode {
 
     public Sphere getSphere() {
         return this.sphere;
+    }
+
+    public Xform getXform() {
+        return this.sphereXform;
     }
 
     public static GraphNode findById(java.util.List<GraphNode> list, String id) {
