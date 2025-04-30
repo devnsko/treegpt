@@ -3,15 +3,18 @@ package com.javafx;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class GraphApp extends Application {
 
@@ -30,7 +33,7 @@ public class GraphApp extends Application {
     final Xform cameraXform = new Xform();
     final Xform cameraXform2 = new Xform();
     final Xform cameraXform3 = new Xform();
-    private static final double CAMERA_INITIAL_DISTANCE = -450;
+    private static final double CAMERA_INITIAL_DISTANCE = -50;
     private static final double CAMERA_INITIAL_X_ANGLE = 70.0;
     private static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
     private static final double CAMERA_NEAR_CLIP = 0.1;
@@ -242,7 +245,32 @@ public class GraphApp extends Application {
     }
 
     private void mixingAngles() {
-        // edgeGroup.getChildren().forEach();
+        edgeGroup.getChildren().forEach(node -> {
+            if (node instanceof CylinderXform) {
+                CylinderXform edge = (CylinderXform) node;
+                // System.out.println(edge.cylinder.getRotationAxis() + " -=- " + edge.cylinder.getRotate());
+                Cylinder cyl = edge.cylinder;
+                double angle = cyl.getRotate();
+                Point3D axis = cyl.getRotationAxis();
+                if ((angle / 90.0) < 3.0) {
+                    angle += 90;
+                } else {
+                    if (axis == Rotate.Z_AXIS) {
+                        axis = Rotate.Y_AXIS;
+                        angle = 0;
+                    } else if (axis == Rotate.Y_AXIS) {
+                        axis = Rotate.X_AXIS;
+                        angle = 0;
+                    } else {
+                        axis = Rotate.Z_AXIS;
+                        angle = 0;
+                    }
+                }
+                System.out.println(axis + " -=- " + angle);
+                cyl.setRotationAxis(axis);
+                cyl.setRotate(angle);
+            }
+        });
     }
 
     public static void main(String[] args) {

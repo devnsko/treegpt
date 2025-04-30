@@ -35,7 +35,7 @@ public class GraphUtils {
         // Rotate rotateY = new Rotate(azimuth, Rotate.Y_AXIS);
         // Rotate rotateX = new Rotate(-elevation, Rotate.X_AXIS);
         
-        CylinderXform line = new CylinderXform(0.01, distance);
+        CylinderXform line = new CylinderXform(0.01, distance/90.0);
 
         line.setTranslate(startX, startY, startZ);
         line.cylinder.setTranslateX(distance/2.0);
