@@ -1,5 +1,6 @@
 package com.javafx;
 
+import javafx.geometry.Point3D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Rotate;
@@ -13,39 +14,21 @@ public class GraphUtils {
     }
 
     public static CylinderXform connect(Xform a, Xform b) {
-        double startX = a.t.getX();
-        double startY = a.t.getY();
-        double startZ = a.t.getZ();
-        double endX = b.t.getX();
-        double endY = b.t.getY();
-        double endZ = b.t.getZ();
-        System.err.println(startX+startY+startZ+endX+endY+endZ);
-        System.err.printf("Start: (%.2f, %.2f, %.2f) End: (%.2f, %.2f, %.2f)%n", startX, startY, startZ, endX, endY, endZ);
+        Point3D dotA = a.localToScene(Point3D.ZERO);
+        Point3D dotB = b.localToScene(Point3D.ZERO);
+        // System.err.printf("Start: (%.2f, %.2f, %.2f) End: (%.2f, %.2f, %.2f)%n", startX, startY, startZ, endX, endY, endZ);
 
+        CylinderXform line = new CylinderXform(dotA, dotB);
 
-        double dx = endX - startX;
-        double dy = endY - startY;
-        double dz = endZ - startZ;
+        // line.setTranslate(startX, startY, startZ);
+        // line.cylinder.setTranslateX(distance/2.0);
+        // line.cylinder.setRotationAxis(Rotate.Z_AXIS);
+        // line.cylinder.setRotate(90.0);
 
-        double distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        System.err.println("========"+distance);
-        double azimuth = Math.toDegrees(Math.atan2(dy, dx));
-        double elevation = Math.toDegrees(Math.atan2(dz, Math.sqrt(dx*dx + dy*dy)));
+        // line.setRotateY(azimuth);
+        // line.setRotateX(elevation);
 
-        // Rotate rotateY = new Rotate(azimuth, Rotate.Y_AXIS);
-        // Rotate rotateX = new Rotate(-elevation, Rotate.X_AXIS);
-        
-        CylinderXform line = new CylinderXform(0.01, distance/90.0);
-
-        line.setTranslate(startX, startY, startZ);
-        line.cylinder.setTranslateX(distance/2.0);
-        line.cylinder.setRotationAxis(Rotate.Z_AXIS);
-        line.cylinder.setRotate(90.0);
-
-        line.setRotateY(azimuth);
-        line.setRotateX(-elevation);
-
-        // line.getTransforms().addAll(rotateY, rotateX);
+        // // line.getTransforms().addAll(rotateY, rotateX);
 
         line.cylinder.setMaterial(new PhongMaterial(Color.LIGHTGRAY));
         return line;

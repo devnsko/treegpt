@@ -1,6 +1,9 @@
 package com.javafx;
 
+import javafx.geometry.Point3D;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 
 public class CylinderXform extends Xform {
     public Cylinder cylinder;
@@ -18,6 +21,24 @@ public class CylinderXform extends Xform {
         // cylinder.setRotationAxis(Rotate.Z_AXIS);
         // cylinder.setRotate(90.0);
         this.getChildren().add(cylinder);
+        System.err.println(height + " ***** " + cylinder.getHeight() + " *** " + cylinder.getTranslateY());
+    }
+
+    public CylinderXform(Point3D origin, Point3D target) {
+        super();
+        Point3D diff = target.subtract(origin);
+        double height = diff.magnitude();
+        cylinder = new Cylinder(0.01, height);
+        this.getChildren().add(cylinder);
+        Point3D mid = origin.midpoint(target);
+        cylinder.getTransforms().add(new Translate(mid.getX(), mid.getY(), mid.getZ()));
+
+        Point3D yAxis = new Point3D(0, 1, 0);
+        Point3D axisOfRotation = yAxis.crossProduct(diff);
+        double angle = Math.acos(yAxis.normalize().dotProduct(diff.normalize())) * 180 / Math.PI;
+        if (!axisOfRotation.equals(Point3D.ZERO)) {
+            cylinder.getTransforms().add(new Rotate(angle, axisOfRotation));
+        }
         System.err.println(height + " ***** " + cylinder.getHeight() + " *** " + cylinder.getTranslateY());
     }
 
