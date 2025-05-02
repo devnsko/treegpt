@@ -28,7 +28,7 @@ public class CylinderXform extends Xform {
         super();
         Point3D diff = target.subtract(origin);
         double height = diff.magnitude();
-        cylinder = new Cylinder(0.01, height);
+        cylinder = new Cylinder(0.0025, height);
         this.getChildren().add(cylinder);
         Point3D mid = origin.midpoint(target);
         cylinder.getTransforms().add(new Translate(mid.getX(), mid.getY(), mid.getZ()));

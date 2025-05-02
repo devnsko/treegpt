@@ -3,7 +3,6 @@ package com.javafx;
 import javafx.geometry.Point3D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.transform.Rotate;
 
 import java.util.Random;
 
@@ -30,7 +29,10 @@ public class GraphUtils {
 
         // // line.getTransforms().addAll(rotateY, rotateX);
 
-        line.cylinder.setMaterial(new PhongMaterial(Color.LIGHTGRAY));
+        PhongMaterial edgeMaterial = new PhongMaterial();
+        edgeMaterial.setDiffuseColor(Color.GREY);
+        edgeMaterial.setSpecularColor(Color.LIGHTBLUE);
+        line.cylinder.setMaterial(edgeMaterial);
         return line;
     }
 }

@@ -1,7 +1,6 @@
 package com.javafx;
 
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
@@ -14,7 +13,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 public class GraphApp extends Application {
 
@@ -33,7 +31,7 @@ public class GraphApp extends Application {
     final Xform cameraXform = new Xform();
     final Xform cameraXform2 = new Xform();
     final Xform cameraXform3 = new Xform();
-    private static final double CAMERA_INITIAL_DISTANCE = -50;
+    private static final double CAMERA_INITIAL_DISTANCE = -150;
     private static final double CAMERA_INITIAL_X_ANGLE = 70.0;
     private static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
     private static final double CAMERA_NEAR_CLIP = 0.1;
@@ -57,7 +55,7 @@ public class GraphApp extends Application {
     @Override
     public void start(Stage stage) {
         Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.WHITE);
+        scene.setFill(Color.rgb(25, 25, 25));
         handleKeyboard(scene, world);
         handleMouse(scene, world);
         
@@ -65,10 +63,17 @@ public class GraphApp extends Application {
         buildCamera();
         buildAxes();
         buildGraph();
+        buildLight();
+        stage.setTitle("3D GPT Message Graph");
+        stage.setScene(scene);
+        stage.show();
+        scene.setCamera(camera);
 
-        AmbientLight ambientLight = new AmbientLight(Color.rgb(200, 200, 200));
+    }
+
+    private void buildLight() {
+        AmbientLight ambientLight = new AmbientLight(Color.rgb(255, 255, 255));
         root.getChildren().add(ambientLight);
-
         
         PointLight pointLight = new PointLight(Color.WHITE);
         pointLight.setTranslateX(0);
@@ -76,12 +81,9 @@ public class GraphApp extends Application {
         pointLight.setTranslateZ(-500);
         root.getChildren().add(pointLight);
         
-        stage.setTitle("3D GPT Message Graph");
-        stage.setScene(scene);
-        stage.show();
-        scene.setCamera(camera);
-
     }
+
+    // TODO: Method to auto-scale camera zoom to map sizes
 
     private void buildGraph() {
         String latestFile = GraphLoader.getLatestGraphFile(".treegpt/graphs");
