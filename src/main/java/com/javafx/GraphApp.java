@@ -2,27 +2,25 @@ package com.javafx;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
-import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.input.ScrollEvent;
 
 import java.util.*;
 
 public class GraphApp extends Application {
-
-    // private double anchorX, anchorY;
-    // private double angleX = 0, angleY = 0;
-    // private double zoom = -500;
-    
     
     final Group root = new Group();
     final Xform graphGroup = new Xform();
+    final List<Node> allSpheres = new ArrayList<>();
     final Xform world = new Xform();
     final Xform nodeGroup = new Xform();
     final Xform edgeGroup = new Xform();
@@ -83,8 +81,6 @@ public class GraphApp extends Application {
         
     }
 
-    // TODO: Method to auto-scale camera zoom to map sizes
-
     private void buildGraph() {
         String latestFile = GraphLoader.getLatestGraphFile(".treegpt/graphs");
         if (latestFile == null) {
@@ -97,6 +93,7 @@ public class GraphApp extends Application {
 
         for (GraphNode node : nodes) {
             nodeGroup.getChildren().add(node.getXform());
+            allSpheres.add(node.getSphere());
             System.err.println(nodeGroup.computeAreaInScreen()); 
         }
 
@@ -111,7 +108,6 @@ public class GraphApp extends Application {
                     line.debug();
                 }
             }
-            System.err.println(node.id); 
         }
         graphGroup.getChildren().addAll(nodeGroup, edgeGroup);
         root.getChildren().add(graphGroup);
@@ -200,7 +196,6 @@ public class GraphApp extends Application {
                 }
             }
         });
-        // TODO: Zoom In/Out
         scene.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
             public void handle(ScrollEvent me) {
@@ -236,9 +231,18 @@ public class GraphApp extends Application {
                     case B:
                         nodeGroup.setVisible(!nodeGroup.isVisible());
                         break;
-                    case M:
-                    // TODO: CHECK mixed EVERY angle rotation
-                        mixingAngles();
+                    case P:
+                        // TODO: Fix Camera's center-pivot changing
+                        List<Node> AllNode = new ArrayList<>();
+                        AllNode.addAll(allSpheres);
+                        AllNode.addAll(graphGroup.getChildren());
+                        AllNode.addAll(getAllNodes(graphGroup));
+                        PickResult result = manualRayPick(camera, AllNode, 100000.0);
+                        if (result != null) {
+                            Point3D point = result.getIntersectedPoint();
+                            cameraXform3.setPivot(point.getX(), point.getY(), point.getZ());
+                            System.out.printf("🎯 Focus set to (%.3f, %.3f, %.3f)%n", point.getX(), point.getY(), point.getZ());
+                        }
                     default:
                         break;
                 }
@@ -246,34 +250,78 @@ public class GraphApp extends Application {
         });
     }
 
-    private void mixingAngles() {
-        edgeGroup.getChildren().forEach(node -> {
-            if (node instanceof CylinderXform) {
-                CylinderXform edge = (CylinderXform) node;
-                // System.out.println(edge.cylinder.getRotationAxis() + " -=- " + edge.cylinder.getRotate());
-                Cylinder cyl = edge.cylinder;
-                double angle = cyl.getRotate();
-                Point3D axis = cyl.getRotationAxis();
-                if ((angle / 90.0) < 3.0) {
-                    angle += 90;
-                } else {
-                    if (axis == Rotate.Z_AXIS) {
-                        axis = Rotate.Y_AXIS;
-                        angle = 0;
-                    } else if (axis == Rotate.Y_AXIS) {
-                        axis = Rotate.X_AXIS;
-                        angle = 0;
-                    } else {
-                        axis = Rotate.Z_AXIS;
-                        angle = 0;
-                    }
-                }
-                System.out.println(axis + " -=- " + angle);
-                cyl.setRotationAxis(axis);
-                cyl.setRotate(angle);
-            }
-        });
+    
+
+    private List<Node> getAllNodes(Group root) {
+        return getAllNodes(root, new ArrayList<>());
     }
+
+    private List<Node> getAllNodes(Group root, List<Node> children) {
+        for (Node node : root.getChildren()) {
+            children.add(node);
+            if (node instanceof Group) {
+                getAllNodes((Group) node, children);
+            }
+        }
+        return children;
+    }
+
+    private Point3D rayIntersectsAABB(Point3D origin, Point3D dir, Bounds box) {
+        double tMin = (box.getMinX() - origin.getX()) / dir.getX();
+        double tMax = (box.getMaxX() - origin.getX()) / dir.getX();
+        if (tMin > tMax) { double tmp = tMin; tMin = tMax; tMax = tmp; }
+    
+        double tyMin = (box.getMinY() - origin.getY()) / dir.getY();
+        double tyMax = (box.getMaxY() - origin.getY()) / dir.getY();
+        if (tyMin > tyMax) { double tmp = tyMin; tyMin = tyMax; tyMax = tmp; }
+    
+        if ((tMin > tyMax) || (tyMin > tMax)) return null;
+        if (tyMin > tMin) tMin = tyMin;
+        if (tyMax < tMax) tMax = tyMax;
+    
+        double tzMin = (box.getMinZ() - origin.getZ()) / dir.getZ();
+        double tzMax = (box.getMaxZ() - origin.getZ()) / dir.getZ();
+        if (tzMin > tzMax) { double tmp = tzMin; tzMin = tzMax; tzMax = tmp; }
+    
+        if ((tMin > tzMax) || (tzMin > tMax)) return null;
+        if (tzMin > tMin) tMin = tzMin;
+        if (tzMax < tMax) tMax = tzMax;
+    
+        if (tMin < 0) return null; // луч позади
+    
+        return origin.add(dir.multiply(tMin)); // точка входа в AABB
+    }
+    
+    private PickResult manualRayPick(Camera camera, List<Node> nodes, double maxDistance) {
+        Transform transform = camera.getLocalToSceneTransform();
+        Point3D camPos = transform.transform(Point3D.ZERO);
+        Point3D dir = transform.deltaTransform(new Point3D(0, 0, -1)).normalize().multiply(-1);
+    
+        Node closestNode = null;
+        Point3D closestPoint = null;
+        double closestDist = maxDistance;
+    
+        for (Node node : nodes) {
+            Bounds bounds = node.localToScene(node.getBoundsInLocal());
+            Point3D hitPoint = rayIntersectsAABB(camPos, dir, bounds);
+            if (hitPoint != null) {
+                double dist = camPos.distance(hitPoint);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestPoint = hitPoint;
+                    closestNode = node;
+                }
+            }
+        }
+    
+        if (closestPoint != null) {
+            return new PickResult(closestNode, closestPoint, PickResult.FACE_UNDEFINED);
+        }
+    
+        return null;
+    }
+    
+
 
     public static void main(String[] args) {
         launch();

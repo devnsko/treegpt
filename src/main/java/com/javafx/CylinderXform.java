@@ -13,17 +13,7 @@ public class CylinderXform extends Xform {
         cylinder = new Cylinder();
         this.getChildren().add(cylinder);
     }
-
-    public CylinderXform(double radius, double height) {
-        super();
-        cylinder = new Cylinder(radius, height);
-        // cylinder.setTranslateX(height/2.0);
-        // cylinder.setRotationAxis(Rotate.Z_AXIS);
-        // cylinder.setRotate(90.0);
-        this.getChildren().add(cylinder);
-        System.err.println(height + " ***** " + cylinder.getHeight() + " *** " + cylinder.getTranslateY());
-    }
-
+    
     public CylinderXform(Point3D origin, Point3D target) {
         super();
         Point3D diff = target.subtract(origin);
