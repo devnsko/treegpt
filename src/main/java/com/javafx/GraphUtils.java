@@ -15,19 +15,7 @@ public class GraphUtils {
     public static CylinderXform connect(Xform a, Xform b) {
         Point3D dotA = a.localToScene(Point3D.ZERO);
         Point3D dotB = b.localToScene(Point3D.ZERO);
-        // System.err.printf("Start: (%.2f, %.2f, %.2f) End: (%.2f, %.2f, %.2f)%n", startX, startY, startZ, endX, endY, endZ);
-
         CylinderXform line = new CylinderXform(dotA, dotB);
-
-        // line.setTranslate(startX, startY, startZ);
-        // line.cylinder.setTranslateX(distance/2.0);
-        // line.cylinder.setRotationAxis(Rotate.Z_AXIS);
-        // line.cylinder.setRotate(90.0);
-
-        // line.setRotateY(azimuth);
-        // line.setRotateX(elevation);
-
-        // // line.getTransforms().addAll(rotateY, rotateX);
 
         PhongMaterial edgeMaterial = new PhongMaterial();
         edgeMaterial.setDiffuseColor(Color.GREY);

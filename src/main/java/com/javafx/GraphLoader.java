@@ -14,19 +14,51 @@ public class GraphLoader {
 
             for (JsonElement el : arr) {
                 JsonObject obj = el.getAsJsonObject();
+
+                // JsonObject promptParts = obj.has("prompt") && !obj.get("prompt").isJsonNull() 
+                //                         ? obj.getAsJsonObject("prompt").getAsJsonObject("parts") 
+                //                         : null;
+                // String promptText = promptParts != null && promptParts.size() > 0 ? promptParts.get("text").getAsString() : null;
+                
+                JsonArray replyParts = obj.has("reply") && !obj.get("reply").isJsonNull() 
+                                        ? obj.getAsJsonObject("reply").getAsJsonArray("parts") 
+                                        : null;
+                String replyText = replyParts != null && replyParts.size() > 0 ? replyParts.get(0).getAsJsonObject().get("text").getAsString() : null;
+
+                // TODO: SKIP pairs without reply text
+                if (replyText == null || replyText.length() == 0) continue;
+
                 System.out.println(obj.get("title"));
                 JsonObject pos = obj.getAsJsonObject("position");
 
-                String id = obj.get("id").getAsString();
-                String parent = obj.has("parent") && !obj.get("parent").isJsonNull()
-                                ? obj.get("parent").getAsString()
+                String promptId = obj.getAsJsonObject("prompt").get("message_id").getAsString();
+                String replyId = obj.getAsJsonObject("reply").get("message_id").getAsString();
+                String parentId = obj.has("parent_id") && !obj.get("parent_id").isJsonNull()
+                                ? obj.get("parent_id").getAsString()
                                 : null;
+                List<String> childrenIds = new ArrayList<>();
+                if (obj.has("children_id") && obj.get("children_id").isJsonArray()) {
+                    for (JsonElement childId : obj.getAsJsonArray("children_id")) {
+                        childrenIds.add(childId.getAsString());
+                    }
+                }
+                String conversationId = obj.get("conversation_id").getAsString();
+                String conversationTitle = obj.get("title").getAsString();
+
                 int cluster = obj.get("cluster").getAsInt();
                 double x = pos.get("x").getAsDouble();
                 double y = pos.get("y").getAsDouble();
                 double z = pos.get("z").getAsDouble();
 
-                list.add(new GraphNode(id, parent, cluster, x, y, z));
+                System.out.println(promptId + " - " + replyId);
+                list.add(new GraphNode( promptId, 
+                                        replyId, 
+                                        childrenIds, 
+                                        parentId, 
+                                        conversationTitle,
+                                        conversationId, 
+                                        cluster, 
+                                        x, y, z));
             }
             System.out.println(list.size());
         } catch (IOException e) {

@@ -29,7 +29,6 @@ public class CylinderXform extends Xform {
         if (!axisOfRotation.equals(Point3D.ZERO)) {
             cylinder.getTransforms().add(new Rotate(angle, axisOfRotation));
         }
-        System.err.println(height + " ***** " + cylinder.getHeight() + " *** " + cylinder.getTranslateY());
     }
 
     @Override

@@ -94,18 +94,14 @@ public class GraphApp extends Application {
         for (GraphNode node : nodes) {
             nodeGroup.getChildren().add(node.getXform());
             allSpheres.add(node.getSphere());
-            System.err.println(nodeGroup.computeAreaInScreen()); 
         }
 
         for (GraphNode node : nodes) {
             if (node.parentId != null) {
-                GraphNode parent = GraphNode.findById(nodes, node.parentId);
+                GraphNode parent = GraphNode.findByReplyId(nodes, node.parentId);
                 if (parent != null) {
                     CylinderXform line = GraphUtils.connect(node.getXform(), parent.getXform());
                     edgeGroup.getChildren().add(line);
-                    node.getXform().debug();
-                    parent.getXform().debug();
-                    line.debug();
                 }
             }
         }
