@@ -24,6 +24,7 @@ public class GraphApp extends Application {
     final Xform world = new Xform();
     final Xform nodeGroup = new Xform();
     final Xform edgeGroup = new Xform();
+    final Map<String, Xform> conversationGroups = new HashMap<>();
     final Xform axisGroup = new Xform();
     final PerspectiveCamera camera = new PerspectiveCamera(true);
     final Xform cameraXform = new Xform();
@@ -101,7 +102,12 @@ public class GraphApp extends Application {
                 GraphNode parent = GraphNode.findByReplyId(nodes, node.parentId);
                 if (parent != null) {
                     CylinderXform line = GraphUtils.connect(node.getXform(), parent.getXform());
-                    edgeGroup.getChildren().add(line);
+                    Xform conversationGroup = conversationGroups.get(node.conversationId);
+                    if (conversationGroup == null) {
+                        conversationGroup = conversationGroups.put(node.conversationId, new Xform());
+                        edgeGroup.getChildren().add(conversationGroup);
+                    }
+                    conversationGroup.getChildren().add(line);
                 }
             }
         }
