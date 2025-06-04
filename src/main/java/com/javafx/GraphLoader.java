@@ -25,7 +25,6 @@ public class GraphLoader {
                                         : null;
                 String replyText = replyParts != null && replyParts.size() > 0 ? replyParts.get(0).getAsJsonObject().get("text").getAsString() : null;
 
-                // TODO: SKIP pairs without reply text
                 if (replyText == null || replyText.length() == 0) continue;
 
                 System.out.println(obj.get("title"));

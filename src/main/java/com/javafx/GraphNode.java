@@ -38,6 +38,7 @@ public class GraphNode {
 
         PhongMaterial mat = new PhongMaterial(GraphUtils.colorByCluster(cluster));
         this.sphere.setMaterial(mat);
+        this.sphere.setUserData(this);
     }
 
     public Sphere getSphere() {

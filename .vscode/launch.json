@@ -12,8 +12,16 @@
         "type": "java",
         "name": "Run with Maven (javafx:run)",
         "request": "launch",
-        "mainClass": "com.javafx.App",
+        "mainClass": "com.javafx.GraphApp",
         "preLaunchTask": "run-javafx-maven"
+      },
+      {
+        "type": "java",
+        "name": "Debug GraphApp",
+        "request": "launch",
+        "mainClass": "com.javafx.GraphApp",
+        "projectName": "treegpt",
+        "vmArgs": "\"--module-path=C:/Program Files/Eclipse Adoptium/javafx-sdk-17.0.15/lib\" --add-modules javafx.controls,javafx.fxml"
       }
     ]
   }
